@@ -99,7 +99,7 @@ for i in range(n_epochs):
        print(100. * correct / len(train_loader.dataset))
 
 torch.save(model.state_dict(), './saved_model/model_anderson.pth')
-torch.save(optimizer.state_dict(), './saved_model/optimizer.pth')
+torch.save(optimizer.state_dict(), '../saved_model/optimizer.pth')
 
 
 ##

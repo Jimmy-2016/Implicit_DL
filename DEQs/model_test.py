@@ -57,7 +57,7 @@ test_loader = torch.utils.data.DataLoader(
 exmaple = enumerate(test_loader)
 batch_index, (data, target) = next(exmaple)
 
-PATH = './saved_model/model_iter.pth'
+PATH = '../saved_model/model_iter.pth'
 Conditional = 0
 
 model = DEQModel().to(device)

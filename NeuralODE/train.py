@@ -1,8 +1,12 @@
-import torch
 
 from model import *
 
-## Params
+
+
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+
+
 n_epochs = 5
 batch_size_train = 128
 batch_size_test = 10
@@ -65,9 +69,11 @@ test_loader = torch.utils.data.DataLoader(
 
 
 # disp_example(train_loader, 5)
+#
+# model = DEQModel().to(device)
+# model
+model = ODEModel().to(device)
 
-model = DEQModel().to(device)
-model
 
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
@@ -78,7 +84,8 @@ for i in range(n_epochs):
    correct = 0
 
    for _, (tmpdata, tmptar) in enumerate(train_loader):
-       predict = model(tmpdata)
+       # predict = model(tmpdata.view(tmptar.shape[0], -1))
+       # data, target = tmpdata.view(tmpdata.size(0), -1).to(device), tmptar.to(device)
 
        optimizer.zero_grad()
        output = model(tmpdata)
@@ -88,7 +95,7 @@ for i in range(n_epochs):
 
        # correct += (predict.argmax(axis=1) == tmptar.argmax(axis=1)).sum()
 
-       correct += (predict.argmax(axis=1) == tmptar).sum()
+       correct += (output.argmax(axis=1) == tmptar).sum()
 
 
    train_loss.append(loss.item())
@@ -98,8 +105,8 @@ for i in range(n_epochs):
            i,  loss.item()))
        print(100. * correct / len(train_loader.dataset))
 
-torch.save(model.state_dict(), './saved_model/model_anderson.pth')
-torch.save(optimizer.state_dict(), './saved_model/optimizer.pth')
+torch.save(model.state_dict(), './saved_model/model_ode.pth')
+torch.save(optimizer.state_dict(), '../saved_model/optimizer.pth')
 
 
 ##
@@ -108,6 +115,7 @@ batch_index, (data, target) = next(exmaple)
 predict = model(data.view(data.shape[0], -1)).argmax(1)
 
 for i in range(6):
+
     fig = plt.figure()
     plt.imshow(data[i, :].reshape(28, 28))
     plt.title(str(predict[i].item()))
