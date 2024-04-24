@@ -67,7 +67,25 @@ model.load_state_dict(torch.load(PATH))
 
 predict = model(data.view(data.shape[0], -1)).argmax(1)
 
+# for i in range(6):
+#     fig = plt.figure()
+#     plt.imshow(data[i, :].reshape(28, 28))
+#     plt.title(str(predict[i].item()))
+
 for i in range(6):
     fig = plt.figure()
+    plt.subplot(1, 2, 1)
     plt.imshow(data[i, :].reshape(28, 28))
     plt.title(str(predict[i].item()))
+    plt.subplot(1, 2, 2)
+    plt.colorbar()
+    x_input = model.flatten(data[i, :])
+    x_deq = model.deq_layer(x_input)
+
+    plt.imshow(x_deq.detach().numpy().reshape(28, 28))
+    plt.colorbar()
+
+
+
+
+plt.show()
