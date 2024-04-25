@@ -6,8 +6,8 @@ from model import *
 
 ##
 n_epochs = 10
-batch_size_train = 16
-batch_size_test = 128
+batch_size_train = 128
+batch_size_test = 16
 log_interval = 1
 
 lr = 0.001
@@ -15,7 +15,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(device)
 
 ##
-center = torch.tensor([5.0, 5.0])
+center = torch.tensor([.0, .0, .0])
 model = MyNN(input_size=10, radius=1, center=center)  # example settings
 criterion = torch.nn.MSELoss()  # Example loss function for a regression problem
 optimizer = optim.Adam(model.parameters(), lr=0.001)  # Example optimizer
@@ -26,12 +26,11 @@ targets = torch.randn(1000, 1)  # 100 target points in 2D space
 dataset = CustomDataset(inputs, targets)
 data_loader = DataLoader(dataset, batch_size=batch_size_train, shuffle=True)
 
-plt.figure()
-ax = plt.axes()
+fig, axs = plt.subplots(2, 5, subplot_kw={'projection': '3d'})
 
 train_loss = []
 test_losses = []
-ii = 1
+ii = 0
 for i in range(n_epochs):
 
    model.train()
@@ -51,16 +50,25 @@ for i in range(n_epochs):
    if i % log_interval == 0:
        print('Train Epoch: {} \tLoss: {:.6f}'.format(
            i,  loss.item()))
-       plt.subplot(2, 5, ii)
-       ii += 1
+       # plt.subplot(2, 5, ii)
+       # ax = plt.axes(projection='3d')
        model.eval()
        with torch.no_grad():
+           col = np.mod(ii, 5)
+           row = 0 if ii <= 5 else 1
+
            x = model.linear(tmpdata)
            x = model.circle_projection(x, center)
-           plt.plot(x[:, 0].detach().numpy(), x[:, 1].detach().numpy(), '.', ms=30, c='k')
-           x, y = plt_circle(1, 5, 5)
-           plt.plot(x, y, '-', c='b')
+           axs[row, col].scatter(x[:, 0].detach().numpy(), x[:, 1].detach().numpy(), x[:, 2].detach().numpy(), color='k', s=100)
+           # x, y, z = plt_sphere(center, 1)
+           # ax = fig.add_subplot(111, projection='3d')
+           # ax.plot_surface(x, y, z, color='b', alpha=0.5)
 
+           # plt.plot(x[:, 0].detach().numpy(), x[:, 1].detach().numpy(), '.', ms=30, c='k')
+           # x, y = plt_circle(1, 5, 5)
+           # plt.plot(x, y, '-', c='b')
+
+       ii += 1
 
 
 # torch.save(model.state_dict(), './saved_model/model_anderson.pth')

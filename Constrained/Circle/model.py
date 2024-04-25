@@ -10,7 +10,7 @@ import cvxpy as cp
 import torch.autograd as autograd
 from torch.utils.data import Dataset, DataLoader
 from matplotlib.patches import Circle
-
+import numpy as np
 
 class CircleProjectionLayer(nn.Module):
     def __init__(self, radius, center):
@@ -18,14 +18,20 @@ class CircleProjectionLayer(nn.Module):
         self.radius = radius
 
         # Create optimization variables.
-        z = cp.Variable(2)
+        z = cp.Variable(3)
 
         # Set up the optimization problem: minimize ||z - f||^2 subject to z being on the circle.
-        f = cp.Parameter(2)
-        center = cp.Parameter(2)
+        f = cp.Parameter(3)
+        center = cp.Parameter(3)
+        # min_distance = 1
 
         objective = cp.Minimize(cp.sum_squares(z - f))
         constraints = [cp.sum_squares(z - center) <= radius ** 2]
+        # constraints = [cp.norm(z-center) <= radius ** 2]
+
+        # for i in range(128):
+        #     for j in range(i + 1, 128):
+        #         constraints.append(cp.norm(z[i] - z[j], 2) >= min_distance)
 
         # Create the CVXPY problem
         problem = cp.Problem(objective, constraints)
@@ -42,9 +48,9 @@ class CircleProjectionLayer(nn.Module):
 class MyNN(nn.Module):
     def __init__(self, input_size, radius, center):
         super().__init__()
-        self.linear = nn.Linear(input_size, 2)  # Now we output 2D points.
+        self.linear = nn.Linear(input_size, 3)  # Now we output 2D points.
         self.circle_projection = CircleProjectionLayer(radius, center)
-        self.out = nn.Linear(2, 1)
+        self.out = nn.Linear(3, 1)
         self.relu = nn.ReLU()
 
     def forward(self, x, center):
@@ -76,3 +82,26 @@ def plt_circle(radius, center_x, center_y):
     y = center_y + radius * torch.sin(theta)
 
     return x, y
+
+
+def plt_sphere(center, radius):
+    # fig = plt.figure()
+    # ax = fig.add_subplot(111, projection='3d')
+
+    # theta = torch.linspace(0, 2 * torch.pi, 100)
+    # phi = torch.linspace(0, torch.pi, 100)
+    # theta, phi = torch.meshgrid(theta, phi)
+    #
+    # # Parametric equations for a sphere
+    # x = center[0] + radius * torch.sin(phi) * torch.cos(theta)
+    # y = center[1] + radius * torch.sin(phi) * torch.sin(theta)
+    # z = center[2] + radius * torch.cos(phi)
+
+    u = torch.linspace(0, 2 * torch.pi, 100)
+    v = torch.linspace(0, torch.pi, 100)
+    x = radius * torch.outer(torch.cos(u), torch.sin(v))
+    y = radius * torch.outer(torch.sin(u), torch.sin(v))
+    z = radius * torch.outer(torch.ones(torch.size(u)), torch.cos(v))
+
+    return x, y, z
+
