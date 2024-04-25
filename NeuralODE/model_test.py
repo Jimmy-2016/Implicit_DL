@@ -57,7 +57,7 @@ test_loader = torch.utils.data.DataLoader(
 exmaple = enumerate(test_loader)
 batch_index, (data, target) = next(exmaple)
 
-PATH = '../saved_model/model_ode.pth'
+PATH = './saved_model/model_ode.pth'
 Conditional = 0
 
 model = ODEModel().to(device)
@@ -79,10 +79,13 @@ for i in range(6):
     plt.title(str(predict[i].item()))
     plt.subplot(1, 2, 2)
     plt.colorbar()
-    x_input = model.flatten(data[i, :])
-    x_deq = model.deq_layer(x_input)
+    x = data[i, :]
+    x = x.view(x.size(0), -1)
+    x = model.neural_ode(x)[1][-1, :]
+    # x_input = model.flatten()
+    # x_deq = model.deq_layer(x_input)
 
-    plt.imshow(x_deq.detach().numpy().reshape(28, 28))
+    plt.imshow(x.detach().numpy().reshape(28, 28))
     plt.colorbar()
 
 
