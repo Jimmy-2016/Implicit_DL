@@ -85,17 +85,7 @@ def plt_circle(radius, center_x, center_y):
 
 
 def plt_sphere(center, radius):
-    # fig = plt.figure()
-    # ax = fig.add_subplot(111, projection='3d')
 
-    # theta = torch.linspace(0, 2 * torch.pi, 100)
-    # phi = torch.linspace(0, torch.pi, 100)
-    # theta, phi = torch.meshgrid(theta, phi)
-    #
-    # # Parametric equations for a sphere
-    # x = center[0] + radius * torch.sin(phi) * torch.cos(theta)
-    # y = center[1] + radius * torch.sin(phi) * torch.sin(theta)
-    # z = center[2] + radius * torch.cos(phi)
 
     u = torch.linspace(0, 2 * torch.pi, 100)
     v = torch.linspace(0, torch.pi, 100)
