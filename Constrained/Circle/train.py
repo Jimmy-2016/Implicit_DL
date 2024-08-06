@@ -60,19 +60,10 @@ for i in range(n_epochs):
            x = model.linear(tmpdata)
            x = model.circle_projection(x, center)
            axs[row, col].scatter(x[:, 0].detach().numpy(), x[:, 1].detach().numpy(), x[:, 2].detach().numpy(), color='k', s=100)
-           # x, y, z = plt_sphere(center, 1)
-           # ax = fig.add_subplot(111, projection='3d')
-           # ax.plot_surface(x, y, z, color='b', alpha=0.5)
 
-           # plt.plot(x[:, 0].detach().numpy(), x[:, 1].detach().numpy(), '.', ms=30, c='k')
-           # x, y = plt_circle(1, 5, 5)
-           # plt.plot(x, y, '-', c='b')
 
        ii += 1
 
-
-# torch.save(model.state_dict(), './saved_model/model_anderson.pth')
-# torch.save(optimizer.state_dict(), '../saved_model/optimizer.pth')
 
 
 plt.show()
